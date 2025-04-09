@@ -39,7 +39,8 @@ public class ItemController {
     ) {
         // Создаем Pageable с учетом типа сортировки
         Sort sort = SortType.toSort(sortType);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        int zeroBasedPageNumber = -- pageNumber;
+        Pageable pageable = PageRequest.of(zeroBasedPageNumber, pageSize, sort);
 
         Page<Item> page = itemService.getItems(searchTerm, pageable);
         Optional<Cart> cartOptional = cartService.getCart(1L);
@@ -52,25 +53,27 @@ public class ItemController {
 
         int count = 0;
         List<ItemDto> itemsInRow = new ArrayList<>(N);
+        itemsInRows.add(itemsInRow);
 
         for (int i = 0; i < items.size(); i ++) {
             Integer quantity;
-            if (count < N) {
-                count ++;
-                Item item = items.get(i);
-                Optional<CartDetail> cartDetailOptional = cart.getCartDetail(item);
-                if (cartDetailOptional.isPresent()) {
-                    CartDetail cartDetail = cartDetailOptional.get();
-                    quantity = cartDetail.getQuantity();
-                } else {
-                    quantity = 0;
-                }
-                ItemDto itemDto = ItemDto.of(item, quantity);
-                itemsInRow.add(itemDto);
+            Item item = items.get(i);
+            Optional<CartDetail> cartDetailOptional = cart.getCartDetail(item);
+            if (cartDetailOptional.isPresent()) {
+                CartDetail cartDetail = cartDetailOptional.get();
+                quantity = cartDetail.getQuantity();
             } else {
-                itemsInRows.add(itemsInRow);
-                itemsInRow = new ArrayList<>(N);
+                quantity = 0;
+            }
+            ItemDto itemDto = ItemDto.of(item, quantity);
+            itemsInRow.add(itemDto);
+
+            if (count < N - 1) {
+                count ++;
+            } else {
                 count = 0;
+                itemsInRow = new ArrayList<>(N);
+                itemsInRows.add(itemsInRow);
             }
         }
 

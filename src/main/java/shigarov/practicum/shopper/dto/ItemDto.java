@@ -4,13 +4,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+
 import shigarov.practicum.shopper.domain.Item;
-import shigarov.practicum.shopper.domain.Order;
-import shigarov.practicum.shopper.domain.OrderDetail;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

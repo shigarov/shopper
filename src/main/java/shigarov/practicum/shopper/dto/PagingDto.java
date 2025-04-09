@@ -2,24 +2,22 @@ package shigarov.practicum.shopper.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PagingDto {
-    private int pageNumber;
+    private int oneBasedPageNumber;
     private int pageSize;
     private boolean hasNext;
     private boolean hasPrevious;
 
     public int pageNumber() {
-        return pageNumber;
+        return oneBasedPageNumber;
     }
 
     public int pageSize() {
-        return pageNumber;
+        return pageSize;
     }
 
     public boolean hasNext() {
@@ -31,11 +29,12 @@ public class PagingDto {
     }
 
     public static PagingDto of(@NonNull Page<?> page) {
-        int pageNumber = page.getNumber();
+        int zeroBasedPageNumber = page.getNumber();
+        int oneBasedPageNumber = ++ zeroBasedPageNumber;
         int pageSize = page.getSize();
         boolean hasNext = page.hasNext();
         boolean hasPrevious = page.hasPrevious();
 
-        return new PagingDto(pageNumber, pageSize, hasNext, hasPrevious);
+        return new PagingDto(oneBasedPageNumber, pageSize, hasNext, hasPrevious);
     }
 }
