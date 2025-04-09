@@ -39,9 +39,7 @@ public class OrderService {
     }
 
     public List<Order> getAllOrders(@NonNull Cart cart) {
-        orderRepository.findByCartId(cart.getId());
-
-        return null;
+        return orderRepository.findByCartId(cart.getId());
     }
 
     public Optional<Order> getOrder(@NonNull Long id) {
