@@ -8,6 +8,7 @@ import shigarov.practicum.shopper.domain.Order;
 import shigarov.practicum.shopper.dto.OrderDto;
 import shigarov.practicum.shopper.service.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,12 +24,14 @@ public class OrderController {
         this.cartService = cartService;
     }
 
-    // Оформление заказа
+    // Оформление заказа (покупка товаров в корзине)
     @PostMapping("/buy")
     public String buyItems() {
         Optional<Cart> cartOptional = cartService.getCart(1L);
         Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-        Order order = orderService.createOrder(cart);
+
+        Order order = orderService.buy(cart); // Купить товары в корзине
+        cartService.clear(cart); // После покупки товаров корзина очищается
 
         return "redirect:/orders/" + order.getId() + "?newOrder=true";
     }
@@ -38,9 +41,16 @@ public class OrderController {
     public String showOrders(Model model) {
         Optional<Cart> cartOptional = cartService.getCart(1L);
         Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-        List<Order> orders = orderService.getAllOrders(cart);
 
-        model.addAttribute("orders", orders);
+        List<Order> orders = orderService.getAllOrders(cart);
+        List<OrderDto> orderDTOs = new ArrayList<>(orders.size());
+
+        for (Order order : orders) {
+            OrderDto orderDto = OrderDto.of(order);
+            orderDTOs.add(orderDto);
+        }
+
+        model.addAttribute("orders", orderDTOs);
 
         return "orders";
     }

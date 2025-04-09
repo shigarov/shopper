@@ -16,33 +16,13 @@ import java.util.Optional;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("""
-                SELECT new shigarov.practicum.shopper.dto.ItemDto(
-                    i,
-                    COALESCE((SELECT cd.quantity FROM CartDetail cd
-                             WHERE cd.item.id = i.id AND cd.cart.id = :cartId), 0)
-                )
-                FROM Item i
-                WHERE (:searchTerm IS NULL OR
-                      i.title LIKE CONCAT('%', :searchTerm, '%') OR
-                      i.description LIKE CONCAT('%', :searchTerm, '%'))
+            SELECT i FROM Item i WHERE
+            (:searchTerm IS NULL OR
+            LOWER(i.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR
+            LOWER(i.description) LIKE LOWER(CONCAT('%', :searchTerm, '%')))
             """)
-    Page<ItemDto> findAll(
-            @NonNull @Param("cartId") Long cartId,
-            @Nullable @Param("searchTerm") String searchTerm, // Вернет все товары, если searchTerm = null
+    Page<Item> findAll(
+            @Nullable @Param("searchTerm") String searchTerm,
             @NonNull Pageable pageable
-    );
-
-    @Query("""
-                SELECT new shigarov.practicum.shopper.dto.ItemDto(
-                    i,
-                    COALESCE((SELECT cd.quantity FROM CartDetail cd
-                             WHERE cd.item.id = i.id AND cd.cart.id = :cartId), 0)
-                )
-                FROM Item i
-                WHERE i.id = :itemId
-            """)
-    Optional<ItemDto> findById(
-            @Param("cartId") Long cartId,
-            @Param("itemId") Long itemId
     );
 }

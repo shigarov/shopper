@@ -28,10 +28,6 @@ public class OrderDto {
 
         for (OrderDetail orderDetail : orderDetails) {
             Item item = orderDetail.getItem();
-//            Long id = item.getId();
-//            String title = item.getTitle();
-//            String description = item.getDescription();
-//            String imgPath = item.getImgPath();
             Integer quantity = orderDetail.getQuantity();
             BigDecimal price = orderDetail.getPrice();
             ItemDto itemDto = ItemDto.of(item, quantity, price);
@@ -40,4 +36,5 @@ public class OrderDto {
 
         return orderDto;
     }
+
 }

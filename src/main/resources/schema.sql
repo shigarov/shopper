@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS items;
 
 -- Таблица товаров
 CREATE TABLE items (
-    id BIGINT IDENTITY PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     imgPath VARCHAR(255),
@@ -16,7 +16,8 @@ CREATE TABLE items (
 
 -- Таблица корзин
 CREATE TABLE carts (
-    id BIGINT IDENTITY PRIMARY KEY
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    session_id VARCHAR(64)
 );
 
 -- Таблица деталей корзин
@@ -32,7 +33,7 @@ CREATE TABLE cart_details (
 
 -- Таблица заказов
 CREATE TABLE orders (
-    id BIGINT IDENTITY PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     cart_id BIGINT NOT NULL,
 
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE RESTRICT

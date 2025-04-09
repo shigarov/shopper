@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
+import shigarov.practicum.shopper.repository.CartDetailRepository;
 import shigarov.practicum.shopper.repository.CartRepository;
-import shigarov.practicum.shopper.repository.ItemRepository;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -16,21 +16,31 @@ import static shigarov.practicum.shopper.service.ActionType.*;
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final ItemRepository itemRepository;
+    private final CartDetailRepository cartDetailRepository;
 
-    public CartService(CartRepository cartRepository, ItemRepository itemRepository) {
+    public CartService(
+            CartRepository cartRepository,
+            CartDetailRepository cartDetailRepository//,
+    ) {
         this.cartRepository = cartRepository;
-        this.itemRepository = itemRepository;
+        this.cartDetailRepository = cartDetailRepository;
+    }
+
+    public Cart save(@NonNull Cart cart) {
+        return cartRepository.save(cart);
+    }
+
+    public void clear(@NonNull Cart cart) {
+        cartDetailRepository.deleteAllByCartId(cart.getId());
     }
 
     public void updateCart(
-            @NonNull Long cartId,
-            @NonNull Long itemId,
+            @NonNull Cart cart,
+            @NonNull Item item,
             @NonNull ActionType action
     ) {
-        Optional<Cart> cartOptional = getCart(cartId);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-        Optional<CartDetail> cartDetailOptional = findCartDetailByItem(cart, itemId);
+        //Optional<CartDetail> cartDetailOptional = getCartDetailByItem(cart, item);
+        Optional<CartDetail> cartDetailOptional = cart.getCartDetail(item);
 
         if (cartDetailOptional.isPresent()) {
             CartDetail cartDetail = cartDetailOptional.get();
@@ -48,38 +58,24 @@ public class CartService {
                     if (quantity > 0) {
                         cartDetail.setQuantity(quantity);
                     } else {
-                        cart.getDetails().remove(cartDetail);
+                        Long itemId = cartDetail.getId().getItemId();
+                        cart.getDetails().remove(itemId);
                     }
                 }
 
                 case DELETE -> {
-                    cart.getDetails().remove(cartDetail);
+                    Long itemId = cartDetail.getId().getItemId();
+                    cart.getDetails().remove(itemId);
                 }
             }
             cartRepository.save(cart);
         } else {
             if (action == PLUS) {
-                Optional<Item> itemOptional = itemRepository.findById(itemId);
-                Item item = itemOptional.orElseThrow();
-
                 CartDetail cartDetail = new CartDetail(cart, item, 1);
-                cart.getDetails().add(cartDetail);
-
+                cart.getDetails().put(item, cartDetail);
                 cartRepository.save(cart);
             }
         }
-    }
-
-    private Optional<CartDetail> findCartDetailByItem(@NonNull Cart cart, @NonNull Long itemId) {
-        Set<CartDetail> cartDetails = cart.getDetails();
-
-        for (CartDetail cartDetail : cartDetails) {
-            Item item = cartDetail.getItem();
-            if (item.getId() == itemId)
-                return Optional.of(cartDetail);
-        }
-
-        return Optional.empty();
     }
 
     public Optional<Cart> getCart(@NonNull Long cartId) {
@@ -87,8 +83,8 @@ public class CartService {
     }
 
     public BigDecimal calculateTotalCost(@NonNull Cart cart) {
-        Set<CartDetail> cartDetails = cart.getDetails();
         BigDecimal totalCost = BigDecimal.ZERO;
+        Collection<CartDetail> cartDetails = cart.getDetails().values();
 
         for (CartDetail cartDetail : cartDetails) {
             BigDecimal quantity = BigDecimal.valueOf(cartDetail.getQuantity());

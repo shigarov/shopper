@@ -7,31 +7,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.dto.ItemDto;
 import shigarov.practicum.shopper.service.ActionType;
 import shigarov.practicum.shopper.service.CartService;
+import shigarov.practicum.shopper.service.ItemService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 public class CartController {
 
     private final CartService cartService;
+    private final ItemService itemService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, ItemService itemService) {
         this.cartService = cartService;
+        this.itemService = itemService;
     }
 
-    // Просмотр корзины
+    // Список товаров в корзине
     @GetMapping("/cart/items")
     public String showCart(Model model) {
         Optional<Cart> cartOptional = cartService.getCart(1L);
         Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-        Set<CartDetail> cartDetails = cart.getDetails();
+        //Set<CartDetail> cartDetails = cart.getDetails();
+
+        Collection<CartDetail> cartDetails = cart.getDetails().values();
 
         List<ItemDto> items = new ArrayList<>(cartDetails.size());
         for(CartDetail cartDetail : cartDetails) {
@@ -50,6 +55,16 @@ public class CartController {
         return "cart";
     }
 
+    private void updateCart(Long cartId, Long itemId, ActionType action) {
+        Optional<Item> itemOptional = itemService.getItem(itemId);
+        Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
+
+        Optional<Cart> cartOptional = cartService.getCart(cartId);
+        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+
+        cartService.updateCart(cart, item, action);
+    }
+
     // Изменение количества товара в корзине с главной страницы
     @PostMapping("/main/items/{id}")
     public String updateCartByMainPage(
@@ -57,7 +72,7 @@ public class CartController {
             @RequestParam ActionType action,
             RedirectAttributes redirectAttributes) {
 
-        cartService.updateCart(1L, id, action);
+        updateCart(1L, id, action);
 
         return "redirect:/main/items";
     }
@@ -68,7 +83,7 @@ public class CartController {
             @PathVariable Long id,
             @RequestParam ActionType action) {
 
-        cartService.updateCart(1L, id, action);
+        updateCart(1L, id, action);
 
         return "redirect:/cart/items";
     }
@@ -79,7 +94,7 @@ public class CartController {
             @PathVariable Long id,
             @RequestParam ActionType action) {
 
-        cartService.updateCart(1L, id, action);
+        updateCart(1L, id, action);
 
         return "redirect:/items/" + id;
     }

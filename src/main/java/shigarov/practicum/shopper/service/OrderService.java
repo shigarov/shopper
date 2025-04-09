@@ -2,12 +2,14 @@ package shigarov.practicum.shopper.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import shigarov.practicum.shopper.domain.Cart;
-import shigarov.practicum.shopper.domain.Order;
+import shigarov.practicum.shopper.domain.*;
 import shigarov.practicum.shopper.repository.OrderRepository;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class OrderService {
@@ -17,8 +19,20 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Order createOrder(@NonNull Cart cart) {
-        Order order = Order.of(cart);
+    public Order buy(@NonNull Cart cart) {
+        Order order = new Order();
+        Set<OrderDetail> orderDetails = order.getDetails();
+        Collection<CartDetail> cartDetails = cart.getDetails().values();
+
+        for (CartDetail cartDetail : cartDetails) {
+            Item item = cartDetail.getItem();
+            Integer quantity = cartDetail.getQuantity();
+            BigDecimal price = item.getPrice();
+
+            OrderDetail orderDetail = new OrderDetail(order, item, quantity, price);
+            orderDetails.add(orderDetail);
+        }
+
         Order savedOrder = orderRepository.save(order);
 
         return savedOrder;

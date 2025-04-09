@@ -18,22 +18,4 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetail> details = new HashSet<>();
-
-    private Order() {}
-
-    public static Order of(@NonNull Cart cart) {
-        Order order = new Order();
-        Set<OrderDetail> orderDetails = order.getDetails();
-
-        for (CartDetail cartDetail : cart.getDetails()) {
-            Item item = cartDetail.getItem();
-            Integer quantity = cartDetail.getQuantity();
-            BigDecimal price = item.getPrice();
-
-            OrderDetail orderDetail = new OrderDetail(order, item, quantity, price);
-            orderDetails.add(orderDetail);
-        }
-
-        return order;
-    }
 }

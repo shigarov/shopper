@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "carts")
@@ -20,6 +20,16 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String sessionId;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartDetail> details = new HashSet<>();
+    @MapKey(name = "item")
+    private Map<Item, CartDetail> details = new HashMap<>();
+
+    public Optional<CartDetail> getCartDetail(@NonNull Item item) {
+        CartDetail cartDetail = details.get(item);
+
+        return Optional.ofNullable(cartDetail);
+    }
+
 }

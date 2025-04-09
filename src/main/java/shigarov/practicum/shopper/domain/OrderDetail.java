@@ -10,19 +10,19 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "order_details")
-@IdClass(OrderDetailId.class)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 public class OrderDetail {
-    @Id
+    @EmbeddedId
+    private OrderDetailId id;
+
     @ManyToOne
+    @MapsId("orderId")  // ссылается на поле orderId в CartDetailId
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Id
     @ManyToOne
+    @MapsId("itemId")  // ссылается на поле itemId в CartDetailId
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
@@ -31,4 +31,12 @@ public class OrderDetail {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    public OrderDetail(Order order, Item item, Integer quantity, BigDecimal price) {
+        this.id = new OrderDetailId(order.getId(), item.getId());
+        this.order = order;
+        this.item = item;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }
