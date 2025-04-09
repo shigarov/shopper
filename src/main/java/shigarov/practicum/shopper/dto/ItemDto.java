@@ -19,7 +19,7 @@ public class ItemDto {
     private String title;
     private String description;
     private String imgPath;
-    private Integer quantity;
+    private Integer count;
     private BigDecimal price;
 
     public static ItemDto of(

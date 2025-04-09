@@ -11,6 +11,7 @@ import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.dto.ItemDto;
+import shigarov.practicum.shopper.dto.PagingDto;
 import shigarov.practicum.shopper.service.*;
 
 import java.util.*;
@@ -76,12 +77,9 @@ public class ItemController {
         model.addAttribute("items", itemsInRows);
         model.addAttribute("search", searchTerm);
         model.addAttribute("sort", sortType);
-        model.addAttribute("paging", Map.of(
-                "pageNumber", pageNumber,
-                "pageSize", pageSize,
-                "hasNext", page.hasNext(),
-                "hasPrevious", page.hasPrevious()
-        ));
+
+        PagingDto pagingDto = PagingDto.of(page);
+        model.addAttribute("paging", pagingDto);
 
         return "main";
     }

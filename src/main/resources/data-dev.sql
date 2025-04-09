@@ -1,7 +1,7 @@
-INSERT INTO carts (session_id)
-VALUES ('abc123def456xyz789sessionid0001');
+INSERT INTO carts (id, session_id)
+VALUES (1, 'abc123def456xyz789sessionid0001');
 
-INSERT INTO items (title, description, imgPath, price)
+INSERT INTO items (title, description, img_path, price)
 VALUES
 ('Смартфон Samsung Galaxy S23', 'Флагманский смартфон с AMOLED экраном 6.1"', NULL, 79999.00),
 ('Ноутбук Apple MacBook Air M2', 'Легкий ноутбук с процессором Apple M2 и дисплеем Retina', NULL, 109999.00),
