@@ -39,7 +39,6 @@ public class CartService {
             @NonNull Item item,
             @NonNull ActionType action
     ) {
-        //Optional<CartDetail> cartDetailOptional = getCartDetailByItem(cart, item);
         Optional<CartDetail> cartDetailOptional = cart.getCartDetail(item);
 
         if (cartDetailOptional.isPresent()) {
