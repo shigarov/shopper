@@ -33,15 +33,15 @@ public class OrderController {
     }
 
     // Фабрика DTO заказов
-    private OrderDtoFactory orderDtoFactory = new OrderDtoFactory(new ItemDtoFactory("images-dev"));
+    private OrderDtoFactory orderDtoFactory;
 
-//    @PostConstruct
-//    private void postConstruct() {
-//        if (imagesDir == null)
-//            throw new IllegalStateException("Invalid images directory");
-//        else
-//            orderDtoFactory = new OrderDtoFactory(new ItemDtoFactory(imagesDir));
-//    }
+    @PostConstruct
+    private void postConstruct() {
+        if (imagesDir == null)
+            throw new IllegalStateException("Invalid images directory");
+        else
+            orderDtoFactory = new OrderDtoFactory(new ItemDtoFactory(imagesDir));
+    }
 
     // Оформление заказа (покупка товаров в корзине)
     @PostMapping("/buy")

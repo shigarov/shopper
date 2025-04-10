@@ -39,17 +39,16 @@ public class ItemController {
         this.cartService = cartService;
     }
 
-
     // Фабрика DTO товаров
-    private ItemDtoFactory itemDtoFactory = new ItemDtoFactory("images-dev");
+    private ItemDtoFactory itemDtoFactory;
 
-//    @PostConstruct
-//    private void postConstruct() {
-//        if (imagesDir == null)
-//            throw new IllegalStateException("Invalid images directory");
-//        else
-//            itemDtoFactory = new ItemDtoFactory(imagesDir);
-//    }
+    @PostConstruct
+    private void postConstruct() {
+        if (imagesDir == null)
+            throw new IllegalStateException("Invalid images directory");
+        else
+            itemDtoFactory = new ItemDtoFactory(imagesDir);
+    }
 
     // Просмотр списка всех товаров плиткой на главной странице
     @GetMapping("/main/items")

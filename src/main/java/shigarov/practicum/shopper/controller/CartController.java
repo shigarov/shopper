@@ -39,15 +39,15 @@ public class CartController {
     }
 
     // Фабрика DTO товаров
-    private ItemDtoFactory itemDtoFactory = new ItemDtoFactory("images-dev");
+    private ItemDtoFactory itemDtoFactory;
 
-//    @PostConstruct
-//    private void postConstruct() {
-//        if (imagesDir == null)
-//            throw new IllegalStateException("Invalid images directory");
-//        else
-//            itemDtoFactory = new ItemDtoFactory(imagesDir);
-//    }
+    @PostConstruct
+    private void postConstruct() {
+        if (imagesDir == null)
+            throw new IllegalStateException("Invalid images directory");
+        else
+            itemDtoFactory = new ItemDtoFactory(imagesDir);
+    }
 
     // Список товаров в корзине
     @GetMapping("/cart/items")
