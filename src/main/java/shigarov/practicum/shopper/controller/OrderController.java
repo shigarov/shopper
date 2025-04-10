@@ -84,7 +84,6 @@ public class OrderController {
     ) {
         Optional<Order> orderOptional = orderService.getOrder(id);
         Order order = orderOptional.orElseThrow(() -> new NoSuchElementException("Invalid order"));
-        //OrderDto orderDto = OrderDto.of(order);
         BigDecimal totalCost = orderService.getOrderTotalCost(order);
         OrderDto orderDto = orderDtoFactory.of(order, totalCost);
 

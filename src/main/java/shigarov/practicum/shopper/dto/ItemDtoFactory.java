@@ -29,7 +29,7 @@ public class ItemDtoFactory {
         if (itemImgPath == null) {
             imgPath = null;
         } else {
-            imgPath = imagesDir.resolve("item" + id).resolve(itemImgPath).toString();
+            imgPath = imagesDir.resolve(Long.toString(id)).resolve(itemImgPath).toString();
         }
 
         return new ItemDto(id, title, description, imgPath, quantity, price);

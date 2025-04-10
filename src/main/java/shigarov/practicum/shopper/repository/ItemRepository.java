@@ -25,4 +25,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             @Nullable @Param("searchTerm") String searchTerm,
             @NonNull Pageable pageable
     );
+
+    boolean existsByTitle(String title);
 }
