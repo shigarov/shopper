@@ -1,6 +1,7 @@
 package shigarov.practicum.shopper.controller;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +58,8 @@ public class ItemController {
             @RequestParam(name = "sort", defaultValue = "NO") SortType sortType,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "1") int pageNumber,
-            Model model
+            Model model,
+            HttpSession session
     ) {
         // Создаем Pageable с учетом типа сортировки
         Sort sort = SortType.toSort(sortType);
@@ -65,6 +67,9 @@ public class ItemController {
         Pageable pageable = PageRequest.of(zeroBasedPageNumber, pageSize, sort);
 
         Page<Item> page = itemService.getItems(searchTerm, pageable);
+
+        // System.out.println(session.getId());
+        // TODO получить корзину по session.getId(), если такой нет, то создать новую
         Optional<Cart> cartOptional = cartService.getCart(1L);
         Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
 

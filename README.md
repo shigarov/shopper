@@ -3,19 +3,23 @@
 
 ## Запуск проекта
 
-1. Убедитесь, что у вас установлены Java и Maven, а также Tomcat или Jetty.
+1. Убедитесь, что у вас установлены Docker.
+
 2. Клонируйте репозиторий:
     ```bash
     git clone https://github.com/shigarov/shopper.git
     ```
+   
 3. Перейдите в директорию проекта:
     ```bash 
     cd <project-directory>
     ```
+   
 4. Соберите проект:
     ```bash 
     gradlew clean build
     ```
+   
 5. Запустите приложение:
     ```bash 
     java -jar build/libs/blogger-2.0-SNAPSHOT.jar
