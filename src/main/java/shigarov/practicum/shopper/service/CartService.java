@@ -2,6 +2,7 @@ package shigarov.practicum.shopper.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import shigarov.practicum.shopper.types.ActionType;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
@@ -11,7 +12,7 @@ import shigarov.practicum.shopper.repository.CartRepository;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static shigarov.practicum.shopper.service.ActionType.*;
+import static shigarov.practicum.shopper.types.ActionType.*;
 
 @Service
 public class CartService {
@@ -47,30 +48,30 @@ public class CartService {
             switch (action) {
                 case PLUS -> {
                     Integer quantity = cartDetail.getQuantity();
-                    quantity++;
+                    quantity ++;
                     cartDetail.setQuantity(quantity);
                 }
 
                 case MINUS -> {
                     Integer quantity = cartDetail.getQuantity();
-                    quantity--;
+                    quantity --;
                     if (quantity > 0) {
                         cartDetail.setQuantity(quantity);
                     } else {
-                        Long itemId = cartDetail.getId().getItemId();
-                        cart.getDetails().remove(itemId);
+                        cart.getDetails().remove(item);
                     }
                 }
 
                 case DELETE -> {
-                    Long itemId = cartDetail.getId().getItemId();
-                    cart.getDetails().remove(itemId);
+                    cart.getDetails().remove(item);
                 }
             }
             cartRepository.save(cart);
         } else {
             if (action == PLUS) {
-                CartDetail cartDetail = new CartDetail(cart, item, 1);
+                Integer quantity = 1;
+                BigDecimal price = item.getPrice();
+                CartDetail cartDetail = new CartDetail(cart, item, quantity, price);
                 cart.getDetails().put(item, cartDetail);
                 cartRepository.save(cart);
             }
@@ -81,17 +82,7 @@ public class CartService {
         return cartRepository.findById(cartId);
     }
 
-    public BigDecimal calculateTotalCost(@NonNull Cart cart) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-        Collection<CartDetail> cartDetails = cart.getDetails().values();
-
-        for (CartDetail cartDetail : cartDetails) {
-            BigDecimal quantity = BigDecimal.valueOf(cartDetail.getQuantity());
-            BigDecimal price = cartDetail.getItem().getPrice();
-            BigDecimal cost = price.multiply(quantity);
-            totalCost.add(cost);
-        }
-
-        return totalCost;
+    public BigDecimal getCartTotalCost(@NonNull Cart cart) {
+        return cartDetailRepository.sumTotalCostInCart(cart.getId()).orElse(BigDecimal.ZERO);
     }
 }

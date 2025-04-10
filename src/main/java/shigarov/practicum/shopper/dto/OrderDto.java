@@ -1,29 +1,38 @@
 package shigarov.practicum.shopper.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import shigarov.practicum.shopper.domain.Item;
-import shigarov.practicum.shopper.domain.Order;
-import shigarov.practicum.shopper.domain.OrderDetail;
+import org.springframework.lang.NonNull;
+
+import shigarov.practicum.shopper.domain.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-@Getter
 public class OrderDto {
     private Long id;
     private List<ItemDto> items;
+    private BigDecimal totalCost;
 
     private OrderDto() {}
 
-    public static OrderDto of(@NonNull Order order) {
+    public Long id() {
+        return id;
+    }
+
+    public List<ItemDto> items() {
+        return items;
+    }
+
+    public BigDecimal totalSum() {
+        return totalCost;
+    }
+
+    public static OrderDto of(@NonNull Order order, BigDecimal totalCost) {
         OrderDto orderDto = new OrderDto();
         orderDto.id = order.getId();
 
-        Set<OrderDetail> orderDetails = order.getDetails();
+        Collection<OrderDetail> orderDetails = order.getDetails().values();
         orderDto.items = new ArrayList<>(orderDetails.size());
 
         for (OrderDetail orderDetail : orderDetails) {
@@ -33,6 +42,10 @@ public class OrderDto {
             ItemDto itemDto = ItemDto.of(item, quantity, price);
             orderDto.items.add(itemDto);
         }
+
+        // Подсчет итоговой суммы заказа
+        //orderDto.totalCost = order.totalCost();
+        orderDto.totalCost = totalCost;
 
         return orderDto;
     }

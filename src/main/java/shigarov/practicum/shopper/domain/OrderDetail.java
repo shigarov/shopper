@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "order_details")
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode
 public class OrderDetail {
     @EmbeddedId

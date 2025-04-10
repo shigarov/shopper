@@ -12,10 +12,11 @@ import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.dto.ItemDto;
-import shigarov.practicum.shopper.service.ActionType;
+import shigarov.practicum.shopper.types.ActionType;
 import shigarov.practicum.shopper.service.CartService;
 import shigarov.practicum.shopper.service.ItemService;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Controller
@@ -34,7 +35,6 @@ public class CartController {
     public String showCart(Model model) {
         Optional<Cart> cartOptional = cartService.getCart(1L);
         Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-        //Set<CartDetail> cartDetails = cart.getDetails();
 
         Collection<CartDetail> cartDetails = cart.getDetails().values();
 
@@ -46,10 +46,11 @@ public class CartController {
             items.add(itemDto);
         }
 
-        double total = cartService.calculateTotalCost(cart).doubleValue();
+        // Подсчет итоговой суммы корзины
+        BigDecimal totalCost = cartService.getCartTotalCost(cart);
 
         model.addAttribute("items", items);
-        model.addAttribute("total", total);
+        model.addAttribute("total", totalCost);
         model.addAttribute("empty", items.isEmpty());
 
         return "cart";

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "cart_details")
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode
 public class CartDetail {
     @EmbeddedId
@@ -27,12 +28,16 @@ public class CartDetail {
     private Item item;
 
     @Column(nullable = false)
-    private Integer quantity = 1;  // лучше задать DEFAULT значение
+    private Integer quantity;
 
-    public CartDetail(Cart cart, Item item, Integer quantity) {
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
+    public CartDetail(Cart cart, Item item, Integer quantity, BigDecimal price) {
         this.id = new CartDetailId(cart.getId(), item.getId());
         this.cart = cart;
         this.item = item;
         this.quantity = quantity;
+        this.price = price;
     }
 }

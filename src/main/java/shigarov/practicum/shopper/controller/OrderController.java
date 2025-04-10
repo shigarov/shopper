@@ -8,6 +8,7 @@ import shigarov.practicum.shopper.domain.Order;
 import shigarov.practicum.shopper.dto.OrderDto;
 import shigarov.practicum.shopper.service.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -46,7 +47,8 @@ public class OrderController {
         List<OrderDto> orderDTOs = new ArrayList<>(orders.size());
 
         for (Order order : orders) {
-            OrderDto orderDto = OrderDto.of(order);
+            BigDecimal totalCost = orderService.getOrderTotalCost(order);
+            OrderDto orderDto = OrderDto.of(order, totalCost);
             orderDTOs.add(orderDto);
         }
 
@@ -64,7 +66,9 @@ public class OrderController {
     ) {
         Optional<Order> orderOptional = orderService.getOrder(id);
         Order order = orderOptional.orElseThrow(() -> new NoSuchElementException("Invalid order"));
-        OrderDto orderDto = OrderDto.of(order);
+        //OrderDto orderDto = OrderDto.of(order);
+        BigDecimal totalCost = orderService.getOrderTotalCost(order);
+        OrderDto orderDto = OrderDto.of(order, totalCost);
 
         model.addAttribute("order", orderDto);
         model.addAttribute("newOrder", newOrder);

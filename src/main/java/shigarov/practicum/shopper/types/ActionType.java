@@ -1,4 +1,4 @@
-package shigarov.practicum.shopper.service;
+package shigarov.practicum.shopper.types;
 
 public enum ActionType {
     PLUS, MINUS, DELETE

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -33,4 +34,17 @@ public class Cart {
         return Optional.ofNullable(cartDetail);
     }
 
+//    public BigDecimal totalCost() {
+//        BigDecimal totalCost = BigDecimal.ZERO;
+//        Collection<CartDetail> cartDetails = details.values();
+//
+//        for (CartDetail cartDetail : cartDetails) {
+//            BigDecimal quantity = BigDecimal.valueOf(cartDetail.getQuantity());
+//            BigDecimal price = cartDetail.getPrice();
+//            BigDecimal cost = price.multiply(quantity);
+//            totalCost.add(cost);
+//        }
+//
+//        return totalCost;
+//    }
 }

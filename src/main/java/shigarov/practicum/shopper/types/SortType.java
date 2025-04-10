@@ -1,4 +1,4 @@
-package shigarov.practicum.shopper.service;
+package shigarov.practicum.shopper.types;
 
 import org.springframework.data.domain.Sort;
 
