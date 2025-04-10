@@ -1,4 +1,4 @@
-package shigarov.practicum.blogger.storage;
+package shigarov.practicum.shopper.storage;
 
 import java.io.IOException;
 import java.io.InputStream;

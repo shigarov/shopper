@@ -1,4 +1,4 @@
-package shigarov.practicum.blogger.storage;
+package shigarov.practicum.shopper.storage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
-	@Value("${blogger.storage.uploadDir}")
+	@Value("${storage.imagesDir}")
 	private String location;
 
 	public String getLocation() {

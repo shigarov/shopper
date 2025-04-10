@@ -1,12 +1,16 @@
 package shigarov.practicum.shopper.controller;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import shigarov.practicum.shopper.dto.ItemDtoFactory;
 import shigarov.practicum.shopper.types.SortType;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
@@ -15,11 +19,17 @@ import shigarov.practicum.shopper.dto.ItemDto;
 import shigarov.practicum.shopper.dto.PagingDto;
 import shigarov.practicum.shopper.service.*;
 
+import java.nio.file.Path;
 import java.util.*;
 
 @Controller
 public class ItemController {
-    private final int N = 3; // Можно вынести в конфиг
+    // Тот самый N (число товаров показываемых в ряд)
+    private final int N = 3; // TODO Вынести в конфиг
+
+    // Относительный путь к директории с изображениями товаров
+    @Value("${storage.imagesDir}")
+    private String imagesDir;
 
     private final ItemService itemService;
     private final CartService cartService;
@@ -28,6 +38,18 @@ public class ItemController {
         this.itemService = itemService;
         this.cartService = cartService;
     }
+
+
+    // Фабрика DTO товаров
+    private ItemDtoFactory itemDtoFactory = new ItemDtoFactory("images-dev");
+
+//    @PostConstruct
+//    private void postConstruct() {
+//        if (imagesDir == null)
+//            throw new IllegalStateException("Invalid images directory");
+//        else
+//            itemDtoFactory = new ItemDtoFactory(imagesDir);
+//    }
 
     // Просмотр списка всех товаров плиткой на главной странице
     @GetMapping("/main/items")
@@ -66,7 +88,8 @@ public class ItemController {
             } else {
                 quantity = 0;
             }
-            ItemDto itemDto = ItemDto.of(item, quantity);
+            Path imagesDirPath = Path.of(imagesDir);
+            ItemDto itemDto = itemDtoFactory.of(item, quantity);
             itemsInRow.add(itemDto);
 
             if (count < N - 1) {
@@ -108,7 +131,7 @@ public class ItemController {
             quantity = 0;
         }
 
-        ItemDto itemDto = ItemDto.of(item, quantity);
+        ItemDto itemDto = itemDtoFactory.of(item, quantity);
         model.addAttribute("item", itemDto);
 
         return "item";

@@ -1,4 +1,4 @@
-package shigarov.practicum.blogger.storage;
+package shigarov.practicum.shopper.storage;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,10 +1,10 @@
 INSERT INTO carts (id, session_id)
-VALUES (1, 'abc123def456xyz789sessionid0001');
+VALUES (1, '');
 
 INSERT INTO items (title, description, img_path, price)
 VALUES
-('Смартфон Samsung Galaxy S23', 'Флагманский смартфон с AMOLED экраном 6.1"', NULL, 79999.00),
-('Ноутбук Apple MacBook Air M2', 'Легкий ноутбук с процессором Apple M2 и дисплеем Retina', NULL, 109999.00),
+('Смартфон Samsung Galaxy S23', 'Флагманский смартфон с AMOLED экраном 6.1"', 'item1.jpg', 79999.00),
+('Ноутбук Apple MacBook Air M2', 'Легкий ноутбук с процессором Apple M2 и дисплеем Retina', 'item2.jpg', 109999.00),
 ('Наушники Sony WH-1000XM5', 'Беспроводные наушники с шумоподавлением', NULL, 29990.00),
 ('Телевизор LG OLED C3', '55-дюймовый OLED телевизор с разрешением 4K', NULL, 89990.00),
 ('Фотоаппарат Canon EOS R6 Mark II', 'Беззеркальная камера с полнокадровым сенсором', NULL, 179990.00),

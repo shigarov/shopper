@@ -1,4 +1,4 @@
-package shigarov.practicum.blogger.storage;
+package shigarov.practicum.shopper.storage;
 
 public class StorageFileNotFoundException extends StorageException {
 

@@ -1,11 +1,15 @@
 package shigarov.practicum.shopper.controller;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.Order;
+import shigarov.practicum.shopper.dto.ItemDtoFactory;
 import shigarov.practicum.shopper.dto.OrderDto;
+import shigarov.practicum.shopper.dto.OrderDtoFactory;
 import shigarov.practicum.shopper.service.*;
 
 import java.math.BigDecimal;
@@ -16,6 +20,9 @@ import java.util.Optional;
 
 @Controller
 public class OrderController {
+    // Относительный путь к директории с изображениями товаров
+    @Value("${storage.imagesDir}")
+    private String imagesDir;
 
     private final OrderService orderService;
     private final CartService cartService;
@@ -24,6 +31,17 @@ public class OrderController {
         this.orderService = orderService;
         this.cartService = cartService;
     }
+
+    // Фабрика DTO заказов
+    private OrderDtoFactory orderDtoFactory = new OrderDtoFactory(new ItemDtoFactory("images-dev"));
+
+//    @PostConstruct
+//    private void postConstruct() {
+//        if (imagesDir == null)
+//            throw new IllegalStateException("Invalid images directory");
+//        else
+//            orderDtoFactory = new OrderDtoFactory(new ItemDtoFactory(imagesDir));
+//    }
 
     // Оформление заказа (покупка товаров в корзине)
     @PostMapping("/buy")
@@ -48,7 +66,7 @@ public class OrderController {
 
         for (Order order : orders) {
             BigDecimal totalCost = orderService.getOrderTotalCost(order);
-            OrderDto orderDto = OrderDto.of(order, totalCost);
+            OrderDto orderDto = orderDtoFactory.of(order, totalCost);
             orderDTOs.add(orderDto);
         }
 
@@ -68,7 +86,7 @@ public class OrderController {
         Order order = orderOptional.orElseThrow(() -> new NoSuchElementException("Invalid order"));
         //OrderDto orderDto = OrderDto.of(order);
         BigDecimal totalCost = orderService.getOrderTotalCost(order);
-        OrderDto orderDto = OrderDto.of(order, totalCost);
+        OrderDto orderDto = orderDtoFactory.of(order, totalCost);
 
         model.addAttribute("order", orderDto);
         model.addAttribute("newOrder", newOrder);
