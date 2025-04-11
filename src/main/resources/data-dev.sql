@@ -1,6 +1,3 @@
---INSERT INTO carts (id, session_id)
---VALUES (1, '');
-
 --INSERT INTO items (title, description, img_path, price)
 --VALUES
 --('Смартфон Samsung Galaxy S23', 'Флагманский смартфон с AMOLED экраном 6.1"', 'item1.jpg', 79999.00),
