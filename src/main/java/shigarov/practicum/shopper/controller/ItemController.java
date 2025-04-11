@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
@@ -68,10 +69,11 @@ public class ItemController {
 
         Page<Item> page = itemService.getItems(searchTerm, pageable);
 
-        // System.out.println(session.getId());
-        // TODO получить корзину по session.getId(), если такой нет, то создать новую
-        Optional<Cart> cartOptional = cartService.getCart(1L);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+        String sessionId = session.getId();
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
+
+        //Optional<Cart> cartOptional = cartService.getCart(1L);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
 
         List<Item> items = page.getContent();
 
@@ -117,12 +119,15 @@ public class ItemController {
 
     // Просмотр карточки товара
     @GetMapping("/items/{id}")
-    public String showItem(@PathVariable Long id, Model model) {
+    public String showItem(@PathVariable Long id, Model model, HttpSession session) {
         Optional<Item> itemOptional = itemService.getItem(id);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
 
-        Optional<Cart> cartOptional = cartService.getCart(1L);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+        //Optional<Cart> cartOptional = cartService.getCart(1L);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+
+        String sessionId = session.getId();
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
         Optional<CartDetail> cartDetailOptional = cart.getCartDetail(item);
 

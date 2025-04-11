@@ -14,7 +14,6 @@ import java.util.*;
 @Table(name = "carts")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 public class Cart {
     @Id
@@ -27,6 +26,10 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "item")
     private Map<Item, CartDetail> details = new HashMap<>();
+
+    public Cart(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
     public Optional<CartDetail> getCartDetail(@NonNull Item item) {
         CartDetail cartDetail = details.get(item);

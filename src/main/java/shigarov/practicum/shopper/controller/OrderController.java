@@ -1,6 +1,7 @@
 package shigarov.practicum.shopper.controller;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,9 +46,12 @@ public class OrderController {
 
     // Оформление заказа (покупка товаров в корзине)
     @PostMapping("/buy")
-    public String buyItems() {
-        Optional<Cart> cartOptional = cartService.getCart(1L);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+    public String buyItems(HttpSession session) {
+        //Optional<Cart> cartOptional = cartService.getCart(1L);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+
+        String sessionId = session.getId();
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
         Order order = orderService.buy(cart); // Купить товары в корзине
         cartService.clear(cart); // После покупки товаров корзина очищается
@@ -57,9 +61,12 @@ public class OrderController {
 
     // Список заказов
     @GetMapping("/orders")
-    public String showOrders(Model model) {
-        Optional<Cart> cartOptional = cartService.getCart(1L);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+    public String showOrders(Model model, HttpSession session) {
+        //Optional<Cart> cartOptional = cartService.getCart(1L);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+
+        String sessionId = session.getId();
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
         List<Order> orders = orderService.getAllOrders(cart);
         List<OrderDto> orderDTOs = new ArrayList<>(orders.size());

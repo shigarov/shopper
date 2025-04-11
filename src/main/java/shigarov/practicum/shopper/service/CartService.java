@@ -78,8 +78,22 @@ public class CartService {
         }
     }
 
-    public Optional<Cart> getCart(@NonNull Long cartId) {
-        return cartRepository.findById(cartId);
+//    public Optional<Cart> getCart(@NonNull Long cartId) {
+//        return cartRepository.findById(cartId);
+//    }
+
+    // Получить корзину по идентификатору HTTP-сессии, если такой нет, то создать новую
+    public Cart getOrCreateCartBySessionId(@NonNull String sessionId) {
+        Optional<Cart> cartOptional = cartRepository.findBySessionId(sessionId);
+        if (cartOptional.isPresent()) {
+            return cartOptional.get();
+        } else {
+            return saveCart(new Cart(sessionId));
+        }
+    }
+
+    public Cart saveCart(@NonNull Cart cart) {
+        return cartRepository.save(cart);
     }
 
     public BigDecimal getCartTotalCost(@NonNull Cart cart) {

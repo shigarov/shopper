@@ -1,6 +1,8 @@
 package shigarov.practicum.shopper.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,11 +51,16 @@ public class CartController {
             itemDtoFactory = new ItemDtoFactory(imagesDir);
     }
 
+
+
     // Список товаров в корзине
     @GetMapping("/cart/items")
-    public String showCart(Model model) {
-        Optional<Cart> cartOptional = cartService.getCart(1L);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+    public String showCart(Model model, HttpSession session) {
+        //Optional<Cart> cartOptional = cartService.getCart(1L);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+
+        String sessionId = session.getId();
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
         Collection<CartDetail> cartDetails = cart.getDetails().values();
 
@@ -75,12 +82,13 @@ public class CartController {
         return "cart";
     }
 
-    private void updateCart(Long cartId, Long itemId, ActionType action) {
+    private void updateCart(@NonNull String sessionId, @NonNull Long itemId, @NonNull ActionType action) {
         Optional<Item> itemOptional = itemService.getItem(itemId);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
 
-        Optional<Cart> cartOptional = cartService.getCart(cartId);
-        Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+        //Optional<Cart> cartOptional = cartService.getCart(cartId);
+        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
+        Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
         cartService.updateCart(cart, item, action);
     }
@@ -90,9 +98,10 @@ public class CartController {
     public String updateCartByMainPage(
             @PathVariable Long id,
             @RequestParam ActionType action,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
-
-        updateCart(1L, id, action);
+        String sessionId = session.getId();
+        updateCart(sessionId, id, action);
 
         return "redirect:/main/items";
     }
@@ -101,9 +110,11 @@ public class CartController {
     @PostMapping("/cart/items/{id}")
     public String updateCartByCartPage(
             @PathVariable Long id,
-            @RequestParam ActionType action) {
-
-        updateCart(1L, id, action);
+            @RequestParam ActionType action,
+            HttpSession session
+    ) {
+        String sessionId = session.getId();
+        updateCart(sessionId, id, action);
 
         return "redirect:/cart/items";
     }
@@ -112,9 +123,11 @@ public class CartController {
     @PostMapping("/items/{id}")
     public String updateCartByItemPage(
             @PathVariable Long id,
-            @RequestParam ActionType action) {
-
-        updateCart(1L, id, action);
+            @RequestParam ActionType action,
+            HttpSession session
+    ) {
+        String sessionId = session.getId();
+        updateCart(sessionId, id, action);
 
         return "redirect:/items/" + id;
     }

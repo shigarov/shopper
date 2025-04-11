@@ -1,5 +1,5 @@
-INSERT INTO carts (id, session_id)
-VALUES (1, '');
+--INSERT INTO carts (id, session_id)
+--VALUES (1, '');
 
 --INSERT INTO items (title, description, img_path, price)
 --VALUES
