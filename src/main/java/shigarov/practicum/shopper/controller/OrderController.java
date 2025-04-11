@@ -47,9 +47,6 @@ public class OrderController {
     // Оформление заказа (покупка товаров в корзине)
     @PostMapping("/buy")
     public String buyItems(HttpSession session) {
-        //Optional<Cart> cartOptional = cartService.getCart(1L);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-
         String sessionId = session.getId();
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
@@ -62,9 +59,6 @@ public class OrderController {
     // Список заказов
     @GetMapping("/orders")
     public String showOrders(Model model, HttpSession session) {
-        //Optional<Cart> cartOptional = cartService.getCart(1L);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-
         String sessionId = session.getId();
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 

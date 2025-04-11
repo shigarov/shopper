@@ -72,9 +72,6 @@ public class ItemController {
         String sessionId = session.getId();
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
-        //Optional<Cart> cartOptional = cartService.getCart(1L);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-
         List<Item> items = page.getContent();
 
         // Разбиваем список товаров на подсписки по N элементов в ряд
@@ -122,9 +119,6 @@ public class ItemController {
     public String showItem(@PathVariable Long id, Model model, HttpSession session) {
         Optional<Item> itemOptional = itemService.getItem(id);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
-
-        //Optional<Cart> cartOptional = cartService.getCart(1L);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
 
         String sessionId = session.getId();
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);

@@ -51,14 +51,9 @@ public class CartController {
             itemDtoFactory = new ItemDtoFactory(imagesDir);
     }
 
-
-
     // Список товаров в корзине
     @GetMapping("/cart/items")
     public String showCart(Model model, HttpSession session) {
-        //Optional<Cart> cartOptional = cartService.getCart(1L);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
-
         String sessionId = session.getId();
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
 
@@ -85,11 +80,7 @@ public class CartController {
     private void updateCart(@NonNull String sessionId, @NonNull Long itemId, @NonNull ActionType action) {
         Optional<Item> itemOptional = itemService.getItem(itemId);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
-
-        //Optional<Cart> cartOptional = cartService.getCart(cartId);
-        //Cart cart = cartOptional.orElseThrow(() -> new NoSuchElementException("Invalid cart"));
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
-
         cartService.updateCart(cart, item, action);
     }
 
@@ -131,5 +122,4 @@ public class CartController {
 
         return "redirect:/items/" + id;
     }
-
 }
