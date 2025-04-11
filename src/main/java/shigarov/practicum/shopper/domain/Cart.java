@@ -31,6 +31,11 @@ public class Cart {
         this.sessionId = sessionId;
     }
 
+    public Cart(Long id, String sessionId) {
+        this.id = id;
+        this.sessionId = sessionId;
+    }
+
     public Optional<CartDetail> getCartDetail(@NonNull Item item) {
         CartDetail cartDetail = details.get(item);
 
