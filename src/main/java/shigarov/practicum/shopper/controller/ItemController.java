@@ -26,8 +26,9 @@ import java.util.*;
 
 @Controller
 public class ItemController {
-    // Тот самый N (число товаров показываемых в ряд)
-    private final int N = 3; // TODO Вынести в конфиг
+    // Тот самый N (число товаров показываемых в ряд на главной странице)
+    @Value("${presentation.item-row-size}")
+    private int itemRowSize;
 
     // Относительный путь к директории с изображениями товаров
     @Value("${storage.imagesDir}")
@@ -78,7 +79,7 @@ public class ItemController {
         List<List<ItemDto>> itemsInRows = new LinkedList<>();
 
         int count = 0;
-        List<ItemDto> itemsInRow = new ArrayList<>(N);
+        List<ItemDto> itemsInRow = new ArrayList<>(itemRowSize);
         itemsInRows.add(itemsInRow);
 
         for (int i = 0; i < items.size(); i ++) {
@@ -95,11 +96,11 @@ public class ItemController {
             ItemDto itemDto = itemDtoFactory.of(item, quantity);
             itemsInRow.add(itemDto);
 
-            if (count < N - 1) {
+            if (count < itemRowSize - 1) {
                 count ++;
             } else {
                 count = 0;
-                itemsInRow = new ArrayList<>(N);
+                itemsInRow = new ArrayList<>(itemRowSize);
                 itemsInRows.add(itemsInRow);
             }
         }
