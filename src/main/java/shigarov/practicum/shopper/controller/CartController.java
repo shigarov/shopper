@@ -29,7 +29,7 @@ import jakarta.annotation.PostConstruct;
 public class CartController {
 
     // Относительный путь к директории с изображениями товаров
-    @Value("${storage.imagesDir}")
+    @Value("${storage.images-dir}")
     private String imagesDir;
 
     private final CartService cartService;

@@ -22,7 +22,7 @@ import java.util.Optional;
 @Controller
 public class OrderController {
     // Относительный путь к директории с изображениями товаров
-    @Value("${storage.imagesDir}")
+    @Value("${storage.images-dir}")
     private String imagesDir;
 
     private final OrderService orderService;

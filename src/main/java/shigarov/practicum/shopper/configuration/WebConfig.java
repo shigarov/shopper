@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new SortTypeConverter());
     }
 
-    @Value("${storage.imagesDir}")
+    @Value("${storage.images-dir}")
     private String imagesDir;
 
     @Override
