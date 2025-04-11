@@ -17,7 +17,7 @@ CREATE TABLE items (
 -- Таблица корзин
 CREATE TABLE carts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    session_id VARCHAR(64)
+    session_id VARCHAR(64) UNIQUE
 );
 
 -- Таблица деталей корзин
