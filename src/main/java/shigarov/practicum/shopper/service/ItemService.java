@@ -7,7 +7,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import shigarov.practicum.shopper.domain.Item;
-import shigarov.practicum.shopper.dto.ItemDto;
 import shigarov.practicum.shopper.repository.ItemRepository;
 
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class ItemService {
     }
 
     public Page<Item> getItems(@Nullable String searchTerm, @NonNull Pageable pageable) {
-        return itemRepository.findAll(searchTerm, pageable);
+        return itemRepository.findAllBySearchTerm(searchTerm, pageable);
     }
 
     public Optional<Item> getItem(@NonNull Long itemId) {
