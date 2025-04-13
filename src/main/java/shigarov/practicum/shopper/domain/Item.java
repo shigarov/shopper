@@ -29,4 +29,11 @@ public class Item {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    public Item(String title, String description, String imgPath, BigDecimal price) {
+        this.title = title;
+        this.description = description;
+        this.imgPath = imgPath;
+        this.price = price;
+    }
 }

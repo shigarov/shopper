@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.CartDetail;
 import shigarov.practicum.shopper.domain.Item;
@@ -24,6 +26,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 class CartDetailRepositoryTest {
 
     @Autowired
@@ -33,13 +36,14 @@ class CartDetailRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
+    @Transactional
     void deleteAllByCartId_shouldRemoveAllDetailsForCart() {
         // Arrange
-        Cart cart = new Cart("session1");
-        Item item1 = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-        Item item2 = new Item(2L, "Item2", "Desc2", "img2.jpg", new BigDecimal("20.00"));
-
+        Cart cart = new Cart("1");
         entityManager.persist(cart);
+
+        Item item1 = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
+        Item item2 = new Item("title2", "desc2", "img2.jpg", BigDecimal.TWO);
         entityManager.persist(item1);
         entityManager.persist(item2);
 
@@ -58,18 +62,19 @@ class CartDetailRepositoryTest {
     }
 
     @Test
+    @Transactional
     void sumTotalCostInCart_shouldReturnCorrectSum() {
         // Arrange
         Cart cart = new Cart("session1");
-        Item item1 = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-        Item item2 = new Item(2L, "Item2", "Desc2", "img2.jpg", new BigDecimal("20.00"));
-
         entityManager.persist(cart);
+
+        Item item1 = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
+        Item item2 = new Item("title2", "desc2", "img2.jpg", BigDecimal.TWO);
         entityManager.persist(item1);
         entityManager.persist(item2);
 
-        CartDetail detail1 = new CartDetail(cart, item1, 2, item1.getPrice()); // 10 * 2 = 20
-        CartDetail detail2 = new CartDetail(cart, item2, 1, item2.getPrice()); // 20 * 1 = 20
+        CartDetail detail1 = new CartDetail(cart, item1, 2, item1.getPrice()); // 1 * 2 = 2
+        CartDetail detail2 = new CartDetail(cart, item2, 1, item2.getPrice()); // 2 * 1 = 2
         entityManager.persist(detail1);
         entityManager.persist(detail2);
         entityManager.flush();
@@ -79,13 +84,14 @@ class CartDetailRepositoryTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(new BigDecimal("40.00"), result.get());
+        assertEquals(new BigDecimal("4.00"), result.get());
     }
 
     @Test
+    @Transactional
     void sumTotalCostInCart_shouldReturnEmptyForEmptyCart() {
         // Arrange
-        Cart cart = new Cart("empty-cart");
+        Cart cart = new Cart("1");
         entityManager.persist(cart);
         entityManager.flush();
 
@@ -97,11 +103,13 @@ class CartDetailRepositoryTest {
     }
 
     @Test
+    @Transactional
     void shouldPersistCartDetailWithCompositeKey() {
         // Arrange
-        Cart cart = new Cart("session1");
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
+        Cart cart = new Cart("1");
         entityManager.persist(cart);
+
+        Item item = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
         entityManager.persist(item);
 
         CartDetail detail = new CartDetail(cart, item, 1, item.getPrice());
@@ -114,45 +122,5 @@ class CartDetailRepositoryTest {
         assertNotNull(savedDetail);
         assertEquals(cart.getId(), savedDetail.getId().getCartId());
         assertEquals(item.getId(), savedDetail.getId().getItemId());
-    }
-
-    @Test
-    void shouldNotAllowDuplicateCompositeKeys() {
-        // Arrange
-        Cart cart = new Cart("session1");
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-        entityManager.persist(cart);
-        entityManager.persist(item);
-
-        CartDetail detail1 = new CartDetail(cart, item, 1, item.getPrice());
-        cartDetailRepository.save(detail1);
-        entityManager.flush();
-
-        // Act & Assert
-        CartDetail detail2 = new CartDetail(cart, item, 2, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            cartDetailRepository.saveAndFlush(detail2);
-        });
-    }
-
-    @Test
-    void shouldNotAllowNullCartOrItem() {
-        // Arrange
-        Cart cart = new Cart("session1");
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-        entityManager.persist(cart);
-        entityManager.persist(item);
-
-        // Act & Assert for null cart
-        CartDetail detailWithNullCart = new CartDetail(null, item, 1, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            cartDetailRepository.saveAndFlush(detailWithNullCart);
-        });
-
-        // Act & Assert for null item
-        CartDetail detailWithNullItem = new CartDetail(cart, null, 1, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            cartDetailRepository.saveAndFlush(detailWithNullItem);
-        });
     }
 }

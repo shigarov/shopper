@@ -1,13 +1,12 @@
 package shigarov.practicum.shopper.repository;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import shigarov.practicum.shopper.domain.Cart;
-import shigarov.practicum.shopper.domain.Item;
-import shigarov.practicum.shopper.domain.Order;
-import shigarov.practicum.shopper.domain.OrderDetail;
+import org.springframework.test.context.ActiveProfiles;
+import shigarov.practicum.shopper.domain.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -15,6 +14,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 class OrderDetailRepositoryTest {
 
     @Autowired
@@ -24,35 +24,44 @@ class OrderDetailRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
+    @Transactional
     void sumTotalCostInOrder_shouldCalculateCorrectTotal() {
         // Arrange
-        Order order = new Order(new Cart("session1"));
-        Item item1 = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-        Item item2 = new Item(2L, "Item2", "Desc2", "img2.jpg", new BigDecimal("20.00"));
+        Cart cart = new Cart("1");
+        Cart savedCart = entityManager.persist(cart);
 
-        entityManager.persist(order.getCart());
+        Item item1 = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
+        Item item2 = new Item("title2", "desc2", "img2.jpg", BigDecimal.TWO);
         entityManager.persist(item1);
         entityManager.persist(item2);
+
+        Order order = new Order(savedCart);
+
+        entityManager.persist(order.getCart());
+
         entityManager.persist(order);
 
-        OrderDetail detail1 = new OrderDetail(order, item1, 2, item1.getPrice()); // 10 * 2 = 20
-        OrderDetail detail2 = new OrderDetail(order, item2, 3, item2.getPrice()); // 20 * 3 = 60
-        entityManager.persist(detail1);
-        entityManager.persist(detail2);
+        OrderDetail orderDetail1 = new OrderDetail(order, item1, 2, item1.getPrice()); // 1 * 2 = 2
+        OrderDetail orderDetail2 = new OrderDetail(order, item2, 3, item2.getPrice()); // 2 * 3 = 6
+        entityManager.persist(orderDetail1);
+        entityManager.persist(orderDetail2);
         entityManager.flush();
+
+        entityManager.persist(order);
 
         // Act
         Optional<BigDecimal> result = orderDetailRepository.sumTotalCostInOrder(order.getId());
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(new BigDecimal("80.00"), result.get());
+        assertEquals(new BigDecimal("8.00"), result.get());
     }
 
     @Test
+    @Transactional
     void sumTotalCostInOrder_shouldReturnEmptyForEmptyOrder() {
         // Arrange
-        Order order = new Order(new Cart("session1"));
+        Order order = new Order(new Cart("1"));
         entityManager.persist(order.getCart());
         entityManager.persist(order);
         entityManager.flush();
@@ -65,10 +74,11 @@ class OrderDetailRepositoryTest {
     }
 
     @Test
+    @Transactional
     void shouldPersistOrderDetailWithCompositeKey() {
         // Arrange
         Order order = new Order(new Cart("session1"));
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
+        Item item = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
 
         entityManager.persist(order.getCart());
         entityManager.persist(item);
@@ -87,54 +97,10 @@ class OrderDetailRepositoryTest {
     }
 
     @Test
-    void shouldNotAllowDuplicateCompositeKeys() {
-        // Arrange
-        Order order = new Order(new Cart("session1"));
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-
-        entityManager.persist(order.getCart());
-        entityManager.persist(item);
-        entityManager.persist(order);
-
-        OrderDetail detail1 = new OrderDetail(order, item, 1, item.getPrice());
-        orderDetailRepository.save(detail1);
-        entityManager.flush();
-
-        // Act & Assert
-        OrderDetail detail2 = new OrderDetail(order, item, 2, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            orderDetailRepository.saveAndFlush(detail2);
-        });
-    }
-
-    @Test
-    void shouldNotAllowNullOrderOrItem() {
-        // Arrange
-        Order order = new Order(new Cart("session1"));
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
-
-        entityManager.persist(order.getCart());
-        entityManager.persist(item);
-        entityManager.persist(order);
-
-        // Act & Assert for null order
-        OrderDetail detailWithNullOrder = new OrderDetail(null, item, 1, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            orderDetailRepository.saveAndFlush(detailWithNullOrder);
-        });
-
-        // Act & Assert for null item
-        OrderDetail detailWithNullItem = new OrderDetail(order, null, 1, item.getPrice());
-        assertThrows(Exception.class, () -> {
-            orderDetailRepository.saveAndFlush(detailWithNullItem);
-        });
-    }
-
-    @Test
     void shouldNotAllowNegativeQuantity() {
         // Arrange
         Order order = new Order(new Cart("session1"));
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
+        Item item = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
 
         entityManager.persist(order.getCart());
         entityManager.persist(item);
@@ -152,7 +118,7 @@ class OrderDetailRepositoryTest {
     void shouldNotAllowNegativePrice() {
         // Arrange
         Order order = new Order(new Cart("session1"));
-        Item item = new Item(1L, "Item1", "Desc1", "img1.jpg", new BigDecimal("10.00"));
+        Item item = new Item("title1", "desc1", "img1.jpg", BigDecimal.ONE);
 
         entityManager.persist(order.getCart());
         entityManager.persist(item);

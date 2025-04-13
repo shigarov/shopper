@@ -5,6 +5,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
 
 import java.math.BigDecimal;
 
@@ -33,7 +34,7 @@ public class OrderDetail {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    public OrderDetail(Order order, Item item, Integer quantity, BigDecimal price) {
+    public OrderDetail(@NonNull Order order, @NonNull Item item, @NonNull Integer quantity, @NonNull BigDecimal price) {
         this.id = new OrderDetailId(order.getId(), item.getId());
         this.order = order;
         this.item = item;

@@ -1,10 +1,10 @@
 package shigarov.practicum.shopper.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
 
 import java.math.BigDecimal;
 
@@ -33,7 +33,7 @@ public class CartDetail {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    public CartDetail(Cart cart, Item item, Integer quantity, BigDecimal price) {
+    public CartDetail(@NonNull Cart cart, @NonNull Item item, @NonNull Integer quantity, @NonNull BigDecimal price) {
         this.id = new CartDetailId(cart.getId(), item.getId());
         this.cart = cart;
         this.item = item;
