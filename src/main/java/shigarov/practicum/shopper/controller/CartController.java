@@ -2,13 +2,11 @@ package shigarov.practicum.shopper.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import shigarov.practicum.shopper.domain.Cart;
@@ -77,7 +75,11 @@ public class CartController {
         return "cart";
     }
 
-    private void updateCart(@NonNull String sessionId, @NonNull Long itemId, @NonNull ActionType action) {
+    private void updateCart(
+            @NonNull String sessionId,
+            @NonNull Long itemId,
+            @NonNull ActionType action
+    ) throws NoSuchElementException {
         Optional<Item> itemOptional = itemService.getItem(itemId);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
         Cart cart = cartService.getOrCreateCartBySessionId(sessionId);
@@ -90,7 +92,8 @@ public class CartController {
             @PathVariable Long id,
             @RequestParam ActionType action,
             HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes
+    ) throws NoSuchElementException {
         String sessionId = session.getId();
         updateCart(sessionId, id, action);
 
@@ -103,7 +106,7 @@ public class CartController {
             @PathVariable Long id,
             @RequestParam ActionType action,
             HttpSession session
-    ) {
+    ) throws NoSuchElementException {
         String sessionId = session.getId();
         updateCart(sessionId, id, action);
 
@@ -112,14 +115,19 @@ public class CartController {
 
     // Изменение количества товара в корзине (со страницы товара)
     @PostMapping("/items/{id}")
-    public String updateCartByItemPage(
+    public String updateCartByItemPage (
             @PathVariable Long id,
             @RequestParam ActionType action,
             HttpSession session
-    ) {
+    ) throws NoSuchElementException {
         String sessionId = session.getId();
         updateCart(sessionId, id, action);
 
         return "redirect:/items/" + id;
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException e) {
+        return ResponseEntity.notFound().build();
     }
 }
