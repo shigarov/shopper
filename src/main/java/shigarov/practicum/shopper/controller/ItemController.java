@@ -2,6 +2,9 @@ package shigarov.practicum.shopper.controller;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,10 +30,14 @@ import java.util.*;
 public class ItemController {
     // Тот самый N (число товаров показываемых в ряд на главной странице)
     @Value("${presentation.item-row-size}")
+    @Setter
+    @Getter
     private int itemRowSize;
 
     // Относительный путь к директории с изображениями товаров
     @Value("${storage.images-dir}")
+    @Setter
+    @Getter
     private String imagesDir;
 
     private final ItemService itemService;
@@ -45,7 +52,7 @@ public class ItemController {
     private ItemDtoFactory itemDtoFactory;
 
     @PostConstruct
-    private void postConstruct() {
+    public void postConstruct() {
         if (imagesDir == null)
             throw new IllegalStateException("Invalid images directory");
         else
