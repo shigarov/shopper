@@ -1,8 +1,5 @@
 package shigarov.practicum.shopper.integration;
 
-import jakarta.servlet.http.HttpSession;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,8 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.dto.ItemDtoFactory;
 import shigarov.practicum.shopper.repository.CartRepository;
@@ -50,25 +50,24 @@ public class ItemControllerIntegrationTest {
     private Item item1;
     private Item item2;
 
-    @BeforeEach
-    void setUp() {
+    @Test
+    @Transactional
+    public void showItems_ShouldReturnMainViewWithItems() throws Exception {
         item1 = new Item("Item 1", "Desc 1", "img1.jpg", BigDecimal.ONE);
         item2 = new Item("Item 2", "Desc 2", "img2.jpg", BigDecimal.TWO);
 
         item1 = itemRepository.save(item1);
         item2 = itemRepository.save(item2);
-    }
 
-    @AfterEach
-    void cleanUp() {
-        itemRepository.delete(item1);
-        itemRepository.delete(item2);
-    }
+        String sessionId = "1";
+        Cart cart = new Cart(sessionId);
+        cartRepository.save(cart);
 
-    @Test
-    public void showItems_ShouldReturnMainViewWithItems() throws Exception {
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
+
         // Act & Assert
         mockMvc.perform(get("/main/items")
+                        .session(mockSession)
                         .param("search", "Item")
                         .param("sort", "NO")
                         .param("pageSize", "10")
@@ -82,19 +81,36 @@ public class ItemControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void showItem_ShouldReturnItemView_WhenItemExists() throws Exception {
-        Long itemId = itemRepository.findAll().getFirst().getId();
+        item1 = new Item("Item 1", "Desc 1", "img1.jpg", BigDecimal.ONE);
+        item1 = itemRepository.save(item1);
+        Long itemId = item1.getId();
+
+                String sessionId = "1";
+        Cart cart = new Cart(sessionId);
+        cartRepository.save(cart);
+
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
+
         // Act & Assert
-        mockMvc.perform(get("/items/" + itemId))
+        mockMvc.perform(get("/items/" + itemId).session(mockSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name("item"))
                 .andExpect(model().attributeExists("item"));
     }
 
     @Test
+    @Transactional
     public void showItem_ShouldReturnNotFound_WhenItemDoesNotExist() throws Exception {
+        String sessionId = "1";
+        Cart cart = new Cart(sessionId);
+        cartRepository.save(cart);
+
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
+
         // Act & Assert
-        mockMvc.perform(get("/items/0"))
+        mockMvc.perform(get("/items/0").session(mockSession))
                 .andExpect(status().isNotFound());
     }
 
