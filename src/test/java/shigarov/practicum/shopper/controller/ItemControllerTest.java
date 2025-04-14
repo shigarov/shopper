@@ -76,11 +76,11 @@ public class ItemControllerTest {
         when(session.getId()).thenReturn(sessionId);
         when(cartService.getOrCreateCartBySessionId(sessionId)).thenReturn(cart);
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         // Выполнение и проверка
         mockMvc.perform(get("/main/items")
-                        .session(session)
+                        .session(mockSession)
                         .param("pageSize", "10")
                         .param("pageNumber", "1"))
                 .andExpect(status().isOk())
@@ -101,11 +101,10 @@ public class ItemControllerTest {
         when(session.getId()).thenReturn(sessionId);
         when(cartService.getOrCreateCartBySessionId(anyString())).thenReturn(new Cart(1L, sessionId));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         // Выполнение и проверка
-        mockMvc.perform(get("/items/1")
-                        .session(session))
+        mockMvc.perform(get("/items/1").session(mockSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name("item"))
                 .andExpect(model().attributeExists("item"));
@@ -117,11 +116,10 @@ public class ItemControllerTest {
         Long nonExistentItemId = 0L;
         when(itemService.getItem(nonExistentItemId)).thenReturn(Optional.empty());
 
-        MockHttpSession session = new MockHttpSession(null, "1");
+        MockHttpSession mockSession = new MockHttpSession(null, "1");
 
         // Act & Assert
-        mockMvc.perform(get("/items/0")
-                        .session(session))
+        mockMvc.perform(get("/items/0").session(mockSession))
                 .andExpect(status().isNotFound());
 
         // Verify
@@ -147,11 +145,11 @@ public class ItemControllerTest {
         when(session.getId()).thenReturn(sessionId);
         when(cartService.getOrCreateCartBySessionId(sessionId)).thenReturn(new Cart(1L, sessionId));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         // Act
         mockMvc.perform(get("/main/items")
-                        .session(session)
+                        .session(mockSession)
                         .param("pageSize", "10")
                         .param("pageNumber", "1"))
                 .andExpect(status().isOk())

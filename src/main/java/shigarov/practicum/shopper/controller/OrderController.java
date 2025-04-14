@@ -38,7 +38,7 @@ public class OrderController {
     private OrderDtoFactory orderDtoFactory;
 
     @PostConstruct
-    private void postConstruct() {
+    public void postConstruct() {
         if (imagesDir == null)
             throw new IllegalStateException("Invalid images directory");
         else

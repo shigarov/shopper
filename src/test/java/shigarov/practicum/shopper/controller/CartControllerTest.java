@@ -57,10 +57,10 @@ public class CartControllerTest {
 
         when(cartService.getCartTotalCost(testCart)).thenReturn(BigDecimal.valueOf(2));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         // Выполнение и проверка
-        mockMvc.perform(get("/cart/items").session(session))
+        mockMvc.perform(get("/cart/items").session(mockSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name("cart"))
                 .andExpect(model().attributeExists("items"))
@@ -79,9 +79,9 @@ public class CartControllerTest {
         when(cartService.getCartTotalCost(testCart))
                 .thenReturn(BigDecimal.ZERO);
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
-        mockMvc.perform(get("/cart/items").session(session))
+        mockMvc.perform(get("/cart/items").session(mockSession))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("empty", true))
                 .andExpect(model().attribute("items", empty()));
@@ -97,10 +97,10 @@ public class CartControllerTest {
 
         when(itemService.getItem(1L)).thenReturn(Optional.of(testItem));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         mockMvc.perform(post("/main/items/1")
-                        .session(session)
+                        .session(mockSession)
                         .param("action", "PLUS"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/main/items"));
@@ -118,10 +118,10 @@ public class CartControllerTest {
 
         when(itemService.getItem(1L)).thenReturn(Optional.of(testItem));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         mockMvc.perform(post("/cart/items/1")
-                        .session(session)
+                        .session(mockSession)
                         .param("action", "DELETE"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/cart/items"));
@@ -139,10 +139,10 @@ public class CartControllerTest {
 
         when(itemService.getItem(1L)).thenReturn(Optional.of(testItem));
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         mockMvc.perform(post("/items/1")
-                        .session(session)
+                        .session(mockSession)
                         .param("action", "MINUS"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/items/1"));
@@ -159,10 +159,10 @@ public class CartControllerTest {
 
         when(itemService.getItem(0L)).thenReturn(Optional.empty());
 
-        MockHttpSession session = new MockHttpSession(null, sessionId);
+        MockHttpSession mockSession = new MockHttpSession(null, sessionId);
 
         mockMvc.perform(post("/cart/items/0")
-                        .session(session)
+                        .session(mockSession)
                         .param("action", "PLUS"))
                 .andExpect(status().isNotFound());
     }
