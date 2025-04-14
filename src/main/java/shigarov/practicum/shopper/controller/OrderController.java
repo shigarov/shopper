@@ -3,6 +3,7 @@ package shigarov.practicum.shopper.controller;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -82,7 +83,7 @@ public class OrderController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "false") boolean newOrder,
             Model model
-    ) {
+    ) throws NoSuchElementException {
         Optional<Order> orderOptional = orderService.getOrder(id);
         Order order = orderOptional.orElseThrow(() -> new NoSuchElementException("Invalid order"));
         BigDecimal totalCost = orderService.getOrderTotalCost(order);
@@ -92,5 +93,10 @@ public class OrderController {
         model.addAttribute("newOrder", newOrder);
 
         return "order";
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException e) {
+        return ResponseEntity.notFound().build();
     }
 }

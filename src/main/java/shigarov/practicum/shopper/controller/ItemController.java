@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
@@ -123,7 +124,11 @@ public class ItemController {
 
     // Просмотр карточки товара
     @GetMapping("/items/{id}")
-    public String showItem(@PathVariable Long id, Model model, HttpSession session) {
+    public String showItem(
+            @PathVariable Long id,
+            Model model,
+            HttpSession session
+    ) throws NoSuchElementException {
         Optional<Item> itemOptional = itemService.getItem(id);
         Item item = itemOptional.orElseThrow(() -> new NoSuchElementException("Invalid item"));
 
@@ -147,4 +152,8 @@ public class ItemController {
         return "item";
     }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException e) {
+        return ResponseEntity.notFound().build();
+    }
 }

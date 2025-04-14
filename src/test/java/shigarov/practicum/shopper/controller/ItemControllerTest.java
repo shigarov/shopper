@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -111,7 +112,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void showItem_shouldThrowExceptionWhenItemNotExists() {
+    public void showItem_shouldThrowExceptionWhenItemNotExists() throws Exception {
         // Arrange
         Long nonExistentItemId = 0L;
         when(itemService.getItem(nonExistentItemId)).thenReturn(Optional.empty());
@@ -119,13 +120,9 @@ public class ItemControllerTest {
         MockHttpSession session = new MockHttpSession(null, "1");
 
         // Act & Assert
-        assertThrows(Exception.class, () -> {
-            mockMvc.perform(get("/items/0")
-                            .session(session))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("item"))
-                    .andExpect(model().attributeExists("item"));
-        });
+        mockMvc.perform(get("/items/0")
+                        .session(session))
+                .andExpect(status().isNotFound());
 
         // Verify
         verify(itemService).getItem(nonExistentItemId);

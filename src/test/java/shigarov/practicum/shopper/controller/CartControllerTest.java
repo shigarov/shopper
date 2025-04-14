@@ -1,13 +1,11 @@
 package shigarov.practicum.shopper.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.util.ReflectionTestUtils;
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.service.CartService;
