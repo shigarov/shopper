@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
 import shigarov.practicum.shopper.domain.Cart;
 import shigarov.practicum.shopper.domain.Item;
 import shigarov.practicum.shopper.dto.ItemDtoFactory;
@@ -19,6 +19,7 @@ import shigarov.practicum.shopper.repository.ItemRepository;
 
 import java.math.BigDecimal;
 
+import org.springframework.mock.web.MockHttpSession;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
